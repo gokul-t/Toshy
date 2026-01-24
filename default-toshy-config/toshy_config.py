@@ -2252,7 +2252,17 @@ modmap("Cond modmap - Terms - Mac kbd", {
 ###################################################################################################
 ###  SLICE_MARK_START: user_custom_modmaps  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 
+multipurpose_modmap("CapsLock is Right Ctrl in GenGUI", {
+    Key.CAPSLOCK:               [Key.ESC, Key.LEFT_META],                 # Modmap Caps Lock to be a Cmd key
+}, when = lambda ctx:
+    cnfg.screen_has_focus and
+    matchProps(not_clas=terms_and_remotes_Str)(ctx) )
 
+multipurpose_modmap("CapsLock is Left Ctrl in GenTerms", {
+    Key.CAPSLOCK:               [Key.ESC, Key.LEFT_CTRL],                  # Modmap Caps Lock to be a Ctrl key (not Cmd)
+}, when = lambda ctx:
+    cnfg.screen_has_focus and
+    matchProps(clas=termStr)(ctx) )
 
 ###  SLICE_MARK_END: user_custom_modmaps  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 ###################################################################################################
