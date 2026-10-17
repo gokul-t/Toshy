@@ -4028,6 +4028,18 @@ keymap("User hardware keys", {
     not ctx_app_is_remote
 )
 
+keymap(
+    "Terminal workspace and tiling shortcuts",
+    {
+        C("LC-1"): [bind, C("Super-1")],
+        C("LC-2"): [bind, C("Super-2")],
+        C("LC-3"): [bind, C("Super-3")],
+        C("LC-RC-H"): C("LC-Super-H"),
+        C("LC-RC-L"): C("LC-Super-L"),
+    },
+    when=lambda ctx: cnfg.screen_has_focus and ctx_app_is_terminal and not ctx_app_is_remote,
+)
+
 ###  SLICE_MARK_END: user_apps  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 ###################################################################################################
 
