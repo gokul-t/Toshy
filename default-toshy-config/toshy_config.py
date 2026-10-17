@@ -1640,7 +1640,41 @@ def toggle_and_show_numlock_state(ctx: KeyContext):
 ###################################################################################################
 ###  SLICE_MARK_START: user_custom_functions  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 
+keymap(
+    "Cmd+A selects current terminal command line",
+    {
+        C("RC-a"): [C("C-a"), C("C-Space"), C("C-e")]
+    },
+    when=lambda ctx: cnfg.screen_has_focus and ctx_app_is_terminal and not ctx_app_is_remote,
+)
 
+hmp_is_alt_select_browser = matchProps(
+    clas=".*(brave|chrom|chrome|edge|epiphany|falkon|firefox|floorp|librewolf|waterfox|vivaldi|zen).*"
+)
+
+keymap(
+    "Cmd+A selects all in GUI apps",
+    {
+        C("RC-a"): C("C-a")
+    },
+    when=lambda ctx: cnfg.screen_has_focus and not ctx_app_is_terminal and not ctx_app_is_remote,
+)
+
+keymap(
+    "Cmd+W closes browser tab",
+    {
+        C("RC-w"): [C("Esc"), C("C-w")]
+    },
+    when=lambda ctx: cnfg.screen_has_focus and hmp_is_alt_select_browser(ctx) and not ctx_app_is_remote,
+)
+
+keymap(
+    "Ctrl+W deletes previous word in GUI apps",
+    {
+        C("Super-w"): C("C-Backspace"),
+    },
+    when=lambda ctx: cnfg.screen_has_focus and not ctx_app_is_remote,
+)
 
 ###  SLICE_MARK_END: user_custom_functions  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 ###################################################################################################
