@@ -1648,6 +1648,14 @@ keymap(
     when=lambda ctx: cnfg.screen_has_focus and ctx_app_is_terminal and not ctx_app_is_remote,
 )
 
+keymap(
+    "Cmd+A selects all in browsers",
+    {
+        C("RC-a"): [C("C-Home"), C("C-Shift-End")]
+    },
+    when=lambda ctx: cnfg.screen_has_focus and hmp_is_alt_select_browser(ctx) and not ctx_app_is_remote,
+)
+
 hmp_is_alt_select_browser = matchProps(
     clas=".*(brave|chrom|chrome|edge|epiphany|falkon|firefox|floorp|librewolf|waterfox|vivaldi|zen).*"
 )
