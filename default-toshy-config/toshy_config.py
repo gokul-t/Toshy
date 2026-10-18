@@ -4076,6 +4076,8 @@ keymap(
         C("LC-1"): [bind, C("Super-1")],
         C("LC-2"): [bind, C("Super-2")],
         C("LC-3"): [bind, C("Super-3")],
+        C("LC-4"): [bind, C("Super-4")],
+        C("LC-5"): [bind, C("Super-5")],
         C("LC-RC-H"): C("LC-Super-H"),
         C("LC-RC-L"): C("LC-Super-L"),
     },
