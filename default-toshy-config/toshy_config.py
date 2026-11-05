@@ -5644,8 +5644,8 @@ if DISTRO_ID == 'pop':
 if DISTRO_ID in ['ubuntu', 'fedora'] and DESKTOP_ENV == 'gnome':
     keymap("GenTerms overrides: Ubuntu/Fedora", {
         C("LC-RC-Q"):               C("Super-L"),                   # Lock screen (ubuntu/fedora)
-        C("LC-Right"):              [bind,C("Super-Page_Up")],      # SL - Change workspace (ubuntu/fedora)
-        C("LC-Left"):               [bind,C("Super-Page_Down")],    # SL - Change workspace (ubuntu/fedora)
+        C("LC-Right"):              [bind,C("Super-Page_Down")],    # SL - Change workspace (ubuntu/fedora)
+        C("LC-Left"):               [bind,C("Super-Page_Up")],      # SL - Change workspace (ubuntu/fedora)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
         ctx_ovl_terminal_ergo and
@@ -5896,8 +5896,8 @@ if DISTRO_ID in ['fedora', 'almalinux'] and DESKTOP_ENV == 'gnome':
     keymap("GenGUI overrides: Fedora GNOME", {
         C("Super-RC-Q"):            C("Super-L"),                   # Lock screen (fedora)
         C("RC-H"):                  C("Super-h"),                   # Default SL - Minimize app (gnome/budgie/popos/fedora) not-deepin
-        C("Super-Right"):          [bind,C("Super-Page_Up")],       # SL - Change workspace (ubuntu/fedora)
-        C("Super-Left"):           [bind,C("Super-Page_Down")],     # SL - Change workspace (ubuntu/fedora)
+        C("Super-Right"):          [bind,C("Super-Page_Down")],     # SL - Change workspace (ubuntu/fedora)
+        C("Super-Left"):           [bind,C("Super-Page_Up")],       # SL - Change workspace (ubuntu/fedora)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
         ctx_ovl_macos_globals and
@@ -5967,8 +5967,16 @@ if DISTRO_ID == 'pop':
 if DISTRO_ID == 'ubuntu':
     keymap("GenGUI overrides: Ubuntu", {
         C("Super-RC-Q"):            C("Super-L"),                   # Lock screen (ubuntu)
-        C("Super-Right"):          [bind,C("Super-Page_Up")],       # SL - Change workspace (ubuntu)
-        C("Super-Left"):           [bind,C("Super-Page_Down")],     # SL - Change workspace (ubuntu)
+    }, when = lambda ctx:
+        cnfg.screen_has_focus and
+        ctx_ovl_macos_globals and
+        not ctx_app_is_remote
+    )
+
+if DISTRO_ID == 'ubuntu' and DESKTOP_ENV == 'gnome':
+    keymap("GenGUI overrides: Ubuntu GNOME", {
+        C("Super-Right"):          [bind,C("Super-Page_Down")],     # SL - Change workspace (ubuntu)
+        C("Super-Left"):           [bind,C("Super-Page_Up")],       # SL - Change workspace (ubuntu)
     }, when = lambda ctx:
         cnfg.screen_has_focus and
         ctx_ovl_macos_globals and
