@@ -538,6 +538,14 @@ terminals = [
 terminals                       = [x.casefold() for x in terminals]
 termStr                         = toRgxStr(terminals)
 
+# Apps that should get the terminal Ctrl role for CapsLock (when in esc_and_lctrl_role_swap
+# or lctrl_role_swap mode). Add your app class patterns in the 'user_custom_lists' slice.
+# Example usage in ~/.config/toshy/toshy_config.py (in user_custom_lists section):
+#   capslock_ctrl_apps.append("^jetbrains-(?!.*toolbox).*$")
+#   capslock_ctrl_appsStr = toRgxStr(capslock_ctrl_apps)
+capslock_ctrl_apps = []
+capslock_ctrl_appsStr           = toRgxStr(capslock_ctrl_apps)
+
 # DEPRECATED
 # This is only for use with 'remotes_lod', otherwise regex pattern string is used.
 terminals_lod = create_list_of_dicts(terminals)
@@ -1249,6 +1257,8 @@ hmp_is_firefox_browser          = matchProps(clas=browsers_firefoxStr)
 hmp_is_tbird_compose            = matchProps(clas=thunderbirdStr, name=thunderbird_compose_Str)
 hmp_not_tbird_compose           = matchProps(clas=thunderbirdStr, not_name=thunderbird_compose_Str)
 hmp_is_filemanager              = matchProps(clas=filemanagerStr)
+hmp_is_jetbrains                = matchProps(clas="^jetbrains-(?!.*toolbox).*$")
+hmp_is_capslock_ctrl_app        = matchProps(clas=capslock_ctrl_appsStr)
 
 # Hoisted list-of-dicts calls — pre-build inner closures at load time
 _dialog_escape_closures         = [matchProps(**dct) for dct in dialogs_Escape_lod]
@@ -1990,21 +2000,26 @@ multipurpose_modmap("Caps mode - esc_and_lctrl - Mac/Win kbd", {
 multipurpose_modmap("Caps mode - esc_and_lctrl_role_swap - GUI - Mac/Win kbd", {
     # Hold takes over Left Ctrl's contextual role: Super in GUI apps. The
     # displaced Left Ctrl key becomes literal CapsLock (companion modmap below).
+    # Apps in capslock_ctrl_apps list get the terminal Ctrl role instead.
     Key.CAPSLOCK:               [Key.ESC, Key.LEFT_META]        # tap Esc / hold Super (L-Ctrl GUI role)
 }, when = lambda ctx:
     ctx_caps_is_esc_and_lctrl_role_swap and
     cnfg.screen_has_focus and
     (ctx_kbd_is_apple or ctx_kbd_is_windows) and
-    not ctx_app_is_terminal and not ctx_app_is_remote
+    not ctx_app_is_terminal and
+    not hmp_is_capslock_ctrl_app(ctx) and
+    not ctx_app_is_remote
 )
 
-multipurpose_modmap("Caps mode - esc_and_lctrl_role_swap - Terms - Mac/Win kbd", {
-    Key.CAPSLOCK:               [Key.ESC, Key.LEFT_CTRL]        # tap Esc / hold real Ctrl (L-Ctrl Terms role)
+multipurpose_modmap("Caps mode - esc_and_lctrl_role_swap - Terms/CtrlApps - Mac/Win kbd", {
+    # Apps in capslock_ctrl_apps plus terminals get the terminal Ctrl role
+    # so CapsLock works as a real Ctrl for Vim/editor shortcuts in IDE's.
+    Key.CAPSLOCK:               [Key.ESC, Key.LEFT_CTRL]        # tap Esc / hold real Ctrl (Terms/CtrlApps role)
 }, when = lambda ctx:
     ctx_caps_is_esc_and_lctrl_role_swap and
     cnfg.screen_has_focus and
     (ctx_kbd_is_apple or ctx_kbd_is_windows) and
-    ctx_app_is_terminal
+    (ctx_app_is_terminal or hmp_is_capslock_ctrl_app(ctx))
 )
 
 multipurpose_modmap("Cond multi-modmap - Alt_Gr on Menu key", {
@@ -2284,11 +2299,13 @@ modmap("Caps mode - L-Ctrl displacement - Mac/Win kbd", {
     # literal CapsLock. Must contain ONLY Left Ctrl - adding CAPSLOCK here would rewrite
     # keystate.key ahead of apply_multi_modmap and silently null the tap-bearing swap mode.
     # Output is CAPSLOCK in both contexts, so no GUI/Terms split is needed.
+    # Apps in capslock_ctrl_apps list keep their physical Left Ctrl's normal GUI role.
     Key.LEFT_CTRL:              Key.CAPSLOCK,                   # displaced L-Ctrl is CapsLock
 }, when = lambda ctx:
     ctx_caps_swaps_lctrl and
     cnfg.screen_has_focus and
     (ctx_kbd_is_apple or ctx_kbd_is_windows) and
+    not hmp_is_capslock_ctrl_app(ctx) and
     not ctx_app_is_remote
 )
 modmap("Caps mode - lctrl_role_swap - GUI - Mac/Win kbd", {
@@ -2297,15 +2314,17 @@ modmap("Caps mode - lctrl_role_swap - GUI - Mac/Win kbd", {
     ctx_caps_is_lctrl_role_swap and
     cnfg.screen_has_focus and
     (ctx_kbd_is_apple or ctx_kbd_is_windows) and
-    not ctx_app_is_terminal and not ctx_app_is_remote
+    not ctx_app_is_terminal and
+    not hmp_is_capslock_ctrl_app(ctx) and
+    not ctx_app_is_remote
 )
-modmap("Caps mode - lctrl_role_swap - Terms - Mac/Win kbd", {
-    Key.CAPSLOCK:               Key.LEFT_CTRL,                  # L-Ctrl's Terms role (real Ctrl)
+modmap("Caps mode - lctrl_role_swap - Terms/CtrlApps - Mac/Win kbd", {
+    Key.CAPSLOCK:               Key.LEFT_CTRL,                  # L-Ctrl's Terms/CtrlApps role (real Ctrl)
 }, when = lambda ctx:
     ctx_caps_is_lctrl_role_swap and
     cnfg.screen_has_focus and
     (ctx_kbd_is_apple or ctx_kbd_is_windows) and
-    ctx_app_is_terminal
+    (ctx_app_is_terminal or hmp_is_capslock_ctrl_app(ctx))
 )
 modmap("Caps mode - cmd - GUI - not Cbk kbd", {
     Key.CAPSLOCK:               Key.RIGHT_CTRL,                 # Caps is Cmd
@@ -4804,7 +4823,6 @@ keymap("General Web Browsers", {
 
 
 # Keybindings for IntelliJ
-hmp_is_jetbrains                = matchProps(clas="^jetbrains-(?!.*toolbox).*$")
 keymap("Jetbrains", {
     # General
     C("RC-Key_0"):              C("Alt-Key_0"),                 # Open corresponding tool window
