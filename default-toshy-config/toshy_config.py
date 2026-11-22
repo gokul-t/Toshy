@@ -902,6 +902,12 @@ not_win_type_rgx    = re.compile("IBM|Chromebook|Apple", re.I)
 ###  SLICE_MARK_START: user_custom_lists  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 
 
+# Uncomment and modify the entries below to customize CapsLock behavior for specific apps.
+# Apps in this list get the terminal Ctrl role (CapsLock hold = real Ctrl) instead of Super.
+# This is useful for IDEs with Vim mode where you want CapsLock to act as Ctrl.
+# capslock_ctrl_apps.append("^jetbrains-(?!.*toolbox).*$")  # IntelliJ, PyCharm, WebStorm, etc.
+# capslock_ctrl_appsStr = toRgxStr(capslock_ctrl_apps)
+
 
 ###  SLICE_MARK_END: user_custom_lists  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 ###################################################################################################
@@ -4823,6 +4829,7 @@ keymap("General Web Browsers", {
 
 
 # Keybindings for IntelliJ
+hmp_is_jetbrains                = matchProps(clas="^jetbrains-(?!.*toolbox).*$")
 keymap("Jetbrains", {
     # General
     C("RC-Key_0"):              C("Alt-Key_0"),                 # Open corresponding tool window
