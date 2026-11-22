@@ -538,11 +538,7 @@ terminals = [
 terminals                       = [x.casefold() for x in terminals]
 termStr                         = toRgxStr(terminals)
 
-# Apps that should get the terminal Ctrl role for CapsLock (when in esc_and_lctrl_role_swap
-# or lctrl_role_swap mode). Add your app class patterns in the 'user_custom_lists' slice.
-# Example usage in ~/.config/toshy/toshy_config.py (in user_custom_lists section):
-#   capslock_ctrl_apps.append("^jetbrains-(?!.*toolbox).*$")
-#   capslock_ctrl_appsStr = toRgxStr(capslock_ctrl_apps)
+# Apps that should get the terminal Ctrl role for CapsLock (configurable via user_custom_lists)
 capslock_ctrl_apps = []
 capslock_ctrl_appsStr           = toRgxStr(capslock_ctrl_apps)
 
@@ -902,9 +898,6 @@ not_win_type_rgx    = re.compile("IBM|Chromebook|Apple", re.I)
 ###  SLICE_MARK_START: user_custom_lists  ###  EDITS OUTSIDE THESE MARKS WILL BE LOST ON UPGRADE
 
 
-# Uncomment and modify the entries below to customize CapsLock behavior for specific apps.
-# Apps in this list get the terminal Ctrl role (CapsLock hold = real Ctrl) instead of Super.
-# This is useful for IDEs with Vim mode where you want CapsLock to act as Ctrl.
 # capslock_ctrl_apps.append("^jetbrains-(?!.*toolbox).*$")  # IntelliJ, PyCharm, WebStorm, etc.
 # capslock_ctrl_appsStr = toRgxStr(capslock_ctrl_apps)
 
@@ -2006,7 +1999,6 @@ multipurpose_modmap("Caps mode - esc_and_lctrl - Mac/Win kbd", {
 multipurpose_modmap("Caps mode - esc_and_lctrl_role_swap - GUI - Mac/Win kbd", {
     # Hold takes over Left Ctrl's contextual role: Super in GUI apps. The
     # displaced Left Ctrl key becomes literal CapsLock (companion modmap below).
-    # Apps in capslock_ctrl_apps list get the terminal Ctrl role instead.
     Key.CAPSLOCK:               [Key.ESC, Key.LEFT_META]        # tap Esc / hold Super (L-Ctrl GUI role)
 }, when = lambda ctx:
     ctx_caps_is_esc_and_lctrl_role_swap and
@@ -2018,8 +2010,6 @@ multipurpose_modmap("Caps mode - esc_and_lctrl_role_swap - GUI - Mac/Win kbd", {
 )
 
 multipurpose_modmap("Caps mode - esc_and_lctrl_role_swap - Terms/CtrlApps - Mac/Win kbd", {
-    # Apps in capslock_ctrl_apps plus terminals get the terminal Ctrl role
-    # so CapsLock works as a real Ctrl for Vim/editor shortcuts in IDE's.
     Key.CAPSLOCK:               [Key.ESC, Key.LEFT_CTRL]        # tap Esc / hold real Ctrl (Terms/CtrlApps role)
 }, when = lambda ctx:
     ctx_caps_is_esc_and_lctrl_role_swap and
@@ -2305,7 +2295,6 @@ modmap("Caps mode - L-Ctrl displacement - Mac/Win kbd", {
     # literal CapsLock. Must contain ONLY Left Ctrl - adding CAPSLOCK here would rewrite
     # keystate.key ahead of apply_multi_modmap and silently null the tap-bearing swap mode.
     # Output is CAPSLOCK in both contexts, so no GUI/Terms split is needed.
-    # Apps in capslock_ctrl_apps list keep their physical Left Ctrl's normal GUI role.
     Key.LEFT_CTRL:              Key.CAPSLOCK,                   # displaced L-Ctrl is CapsLock
 }, when = lambda ctx:
     ctx_caps_swaps_lctrl and
