@@ -1918,6 +1918,39 @@ exclude_kpad_devs_Str = toRgxStr(exclude_kpad_devs_lst)
 # Hoist placed here because exclude_kpad_devs_Str is defined above
 hmp_not_kpad_devs               = matchProps(not_devn=exclude_kpad_devs_Str)
 
+# ==============================================================================
+# User custom modmaps for per-app CapsLock behavior (place in exclude_kpad_devs
+# slice region so they survive upgrades and run before built-in Caps modmaps)
+# ==============================================================================
+# Example: make CapsLock act as real Ctrl (with Esc on tap) in JetBrains IDEs,
+# while keeping physical Left Ctrl as Super/Cmd. Uncomment to enable.
+
+hmp_my_ctrl_apps = matchProps(clas="^jetbrains-(?!.*toolbox).*$")
+
+multipurpose_modmap("User: Caps is Esc/Ctrl in my apps", {
+    Key.CAPSLOCK:               [Key.ESC, Key.LEFT_CTRL],
+}, when = lambda ctx:
+    cnfg.capslock_mode == 'caps_is_esc_and_lctrl_role_swap' and
+    cnfg.screen_has_focus and
+    hmp_my_ctrl_apps(ctx)
+)
+
+modmap("User: Caps is Ctrl in my apps", {
+    Key.CAPSLOCK:               Key.LEFT_CTRL,
+}, when = lambda ctx:
+    cnfg.capslock_mode == 'caps_is_lctrl_role_swap' and
+    cnfg.screen_has_focus and
+    hmp_my_ctrl_apps(ctx)
+)
+
+modmap("User: L-Ctrl keeps Super in my apps", {
+    Key.LEFT_CTRL:              Key.LEFT_META,
+}, when = lambda ctx:
+    cnfg.capslock_mode in ('caps_is_esc_and_lctrl_role_swap', 'caps_is_lctrl_role_swap') and
+    cnfg.screen_has_focus and
+    hmp_my_ctrl_apps(ctx)
+)
+
 modmap("Cond modmap - Forced Numpad feature",{
     # Make numpad be a numpad regardless of Numlock state (like an Apple keyboard in macOS)
     Key.KP1:                    Key.KEY_1,
